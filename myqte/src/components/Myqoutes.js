@@ -17,7 +17,8 @@ setUser_quotes(quotes)
   }
   
   useEffect(()=>{
-    const intervals = setInterval(fetch_user,500)
+    fetch_user()
+    const intervals = setInterval(fetch_user,10000)
     return () => clearInterval(intervals)
   },[])
 
@@ -29,8 +30,8 @@ setUser_quotes(quotes)
       <div className=" my-4">
         <br></br>
         {user_quotes.map((list,index) => (
-          <ul className="bg-slate-400 h-1 flex items-center border-blue-300">
-            <li className=" bg-slate-200 border-4   border-blue-300 p-4 w-fit mx-auto rounded-lg" key={index}>
+          <ul className="flex">
+            <li className=" border-blue-500 border-2 m-2 rounded-md bg-blue-200 p-2 h-10 shadow-2xl" key={index}>
               {list.user_quote}
             </li>
           </ul>

@@ -305,6 +305,19 @@ app.get('/userQuotesFetch/:currentLogged', async(req,res)=>{
   }
 })
 
+
+
+//show all community quotes
+
+app.get('/community',async(req,res)=>{
+  try{
+    const allCommunity = await pool.query('SELECT user_quote FROM user_quotes')
+    res.status(200).json({all:allCommunity.rows})
+  }catch (error) {
+    res.status(500).json({message:'internal server Error 500', _error:error})
+  }
+})
+
 //port
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

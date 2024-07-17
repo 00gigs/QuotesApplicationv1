@@ -56,7 +56,8 @@ const httpDelete = async (quoteId) =>{
 }
 
 useEffect(() => {
-const intervalid = setInterval(fetchSaved,2000)
+  fetchSaved()
+const intervalid = setInterval(fetchSaved,10000)
 return () => clearInterval(intervalid)
 },[])
 
