@@ -18,6 +18,8 @@ dotenv.config();
 
 //AUTH ROUTE HANDLERS
 
+
+//section
 //Register
 app.post("/auth", async (req, res) => {
   //body
@@ -37,7 +39,7 @@ app.post("/auth", async (req, res) => {
     res.status(400).json({ message: "User creation failed" });
   }
 });
-
+//section
 // Login
 app.post("/signIn", async (req, res) => {
   const { userEmail, userPassword } = req.body;
@@ -72,7 +74,7 @@ app.post("/logout", async (req, res) => {});
 
 
 
-
+//section
 //insert quotes into DB
 async function insertQuotesIntoDB() {
 
@@ -130,7 +132,7 @@ app.get("/randomQuote", async (req, res) => {
       .json({ message: "Internal server error,failed to get quote" });
   }
 });
-
+//section
 //upvote-downvote-quote
 //LIKE
 app.post("/like/:id", async (req, res) => {
@@ -214,7 +216,7 @@ app.get('/votes/:id',async(req,res) =>{
     res.status(500).json({message:'internal server error'})
   }
 })
-
+//section
 // user save Quotes
 app.post("/saveQuote", async (req, res) => {
   const { user, _quote_ } = req.query;
@@ -235,6 +237,23 @@ app.post("/saveQuote", async (req, res) => {
   }
 });
 
+
+app.delete('/removeFav/:_q/:session', async(req,res)=>{
+  try {
+    const _q = req.params._q
+    const session = req.params.session
+    const delQuote = await pool.query('DELETE FROM user_favorites WHERE quote_ = $1 AND user_email = $2', [_q, session]);
+    if (delQuote.rowCount > 0) {
+      res.status(200).json({ message: `deleted:${delQuote.rowCount}` });
+    } else {
+      res.status(404).json({ message: 'Quote not found or already deleted.....',_q });
+    }
+  } catch (error) {
+    console.log('err', error);
+    res.status(500).json({ message: 'internal server error' });
+  }
+})
+
 //retrieve user favorite quote
 app.get("/userfav/:logged", async (req, res) => {
   const { logged } = req.params;
@@ -249,14 +268,15 @@ app.get("/userfav/:logged", async (req, res) => {
     }
     const quote = await pool.query('SELECT quote FROM quotes WHERE id = ANY($1)',[fetched])
     console.log(quote.rows)
-    res.status(200).json({quotes:quote.rows})
+    res.status(200).json({quotes:quote.rows, fetched})
   } catch (error) {
     res.status(500).json({message:'internal service error(500)'})
   }
 });
 
-//upload user quote
 
+//section
+//upload user quote
 app.post('/uploadQuote/:user/:quotes', async(req,res)=>{
 try {
     const {user,quotes} = req.params
