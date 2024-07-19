@@ -298,7 +298,7 @@ app.get('/userQuotesFetch/:currentLogged', async(req,res)=>{
     const {currentLogged} = req.params
     const decoder = jwt_decode.jwtDecode(currentLogged)
     const user_Email = decoder.currentUser
-    const GetMadeQuotes = await pool.query('SELECT user_quote FROM user_quotes WHERE username = $1',[user_Email])
+    const GetMadeQuotes = await pool.query('SELECT user_quote , created_at FROM user_quotes WHERE username = $1',[user_Email])
     res.status(200).json({UserQuotes:GetMadeQuotes.rows})
   } catch (error) {
     res.status(500).json({message:'internal server Error 500', _error:error})
@@ -311,7 +311,7 @@ app.get('/userQuotesFetch/:currentLogged', async(req,res)=>{
 
 app.get('/community',async(req,res)=>{
   try{
-    const allCommunity = await pool.query('SELECT user_quote FROM user_quotes')
+    const allCommunity = await pool.query('SELECT user_quote , created_at FROM user_quotes')
     res.status(200).json({all:allCommunity.rows})
   }catch (error) {
     res.status(500).json({message:'internal server Error 500', _error:error})

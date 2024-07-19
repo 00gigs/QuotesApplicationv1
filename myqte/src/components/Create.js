@@ -26,8 +26,8 @@ const [userQuote,setUserQuote] = useState('')
   return (
     <div className="h-screen flex text-center items-center justify-center">
       <form onSubmit={Upload}>
-        <label>
           <h1 className="mb-3 italic">Create a Quote, change a mind</h1>
+        <label>
           <textarea
             value={userQuote}
             rows="4"
