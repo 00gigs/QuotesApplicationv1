@@ -25,12 +25,12 @@ const isoToDate = (dateConvert) =>{
   const month =logic(norm.getMonth() + 1)
   const days  = logic(norm.getDate())
   const years = logic(norm.getFullYear().toString().slice(-2))
-  let hours = logic(norm.getHours())
+  let hours = norm.getHours()
   hours = hours % 12
   hours = hours ? hours : '12'
   const twelveHour = logic(hours)
   const minutes = logic(norm.getMinutes())
-  const ampm = hours >= 12 ? 'PM': 'AM'
+  const ampm = hours >= 12 ? 'AM': 'PM'
 
   return `${month}/${days}/${years} - ${twelveHour}:${minutes} ${ampm}`
 }

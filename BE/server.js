@@ -298,7 +298,7 @@ app.get('/userQuotesFetch/:currentLogged', async(req,res)=>{
     const {currentLogged} = req.params
     const decoder = jwt_decode.jwtDecode(currentLogged)
     const user_Email = decoder.currentUser
-    const GetMadeQuotes = await pool.query('SELECT user_quote , created_at FROM user_quotes WHERE username = $1',[user_Email])
+    const GetMadeQuotes = await pool.query('SELECT user_quote , created_at , id FROM user_quotes WHERE username = $1',[user_Email])
     res.status(200).json({UserQuotes:GetMadeQuotes.rows})
   } catch (error) {
     res.status(500).json({message:'internal server Error 500', _error:error})
@@ -314,6 +314,16 @@ app.get('/community',async(req,res)=>{
     const allCommunity = await pool.query('SELECT user_quote , created_at FROM user_quotes')
     res.status(200).json({all:allCommunity.rows})
   }catch (error) {
+    res.status(500).json({message:'internal server Error 500', _error:error})
+  }
+})
+
+app.delete('/deleteUserQuote/:qId',async(req,res)=>{
+  const q = req.params.qId
+  try {
+    const deleteQ = await pool.query('DELETE FROM user_quotes WHERE id=$1',[q])
+    res.status(200).json({message:'Delete success',deleteQ})
+  } catch (error) {
     res.status(500).json({message:'internal server Error 500', _error:error})
   }
 })

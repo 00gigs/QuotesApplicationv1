@@ -80,11 +80,11 @@ return () => clearInterval(intervalid)
       </div>
         <div className=" flex flex-col items-center text-center">
   {savedQuotes.map((quote,index)=>(
-    <ul className="bg-orange-300 border-b-4 border-black my-4 flex items-center text-center"  key={index}>
+    <ul className="border-blue-500 border-2 m-4 rounded-md bg-blue-200 p-2 flex shadow-2xl"  key={index}>
     <li className="m-4 items-center text-center flex" >
       <MdDelete 
       onClick={()=>httpDelete(id[index])}
-      className=" hover:cursor-pointer hover:scale-110 size-3 bg-red-500 rounded-lg mx-2"
+      className=" hover:cursor-pointer hover:scale-110 size-3 bg-red-300 rounded-full mx-2 text-xs"
       />
     <FaShareNodes
     className=" bg-green-500 size-3 rounded-lg mx-1"
