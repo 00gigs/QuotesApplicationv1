@@ -328,6 +328,16 @@ app.delete('/deleteUserQuote/:qId',async(req,res)=>{
   }
 })
 
+
+app.get('/rankedQuotes',async(req,res)=>{
+  try {
+    const mostPopular = await pool.query('SELECT uf.quote_, q.quote, q.author, COUNT(uf.quote_) AS favorite_count FROM user_favorites uf JOIN quotes q ON uf.quote_ = q.id GROUP BY uf.quote_, q.quote, q.author ORDER BY favorite_count DESC LIMIT 1')
+    res.status(200).json({topQ:mostPopular.rows})
+} catch (error) {
+  res.status(500).json({message:'internal server Error 500', _error:error})
+}
+})
+
 //port
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
