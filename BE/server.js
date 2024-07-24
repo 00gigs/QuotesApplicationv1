@@ -339,6 +339,18 @@ app.get('/rankedQuotes',async(req,res)=>{
 }
 })
 
+
+//AI search
+app.post('/searchQuery', async(req,res)=>{
+  try {
+ const Searchtext = req.query.queryI
+ res.status(200).json({messageJson:Searchtext})
+ console.log('message------>!!!!',Searchtext)
+  } catch (error) {
+    res.status(500).json({message:'internal server Error 500', Err:error})
+  }
+  })
+
 //port
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
