@@ -66,7 +66,7 @@ const Myqoutes = () => {
                 ></MdDelete>
                 {list.user_quote}
               </div>
-              <div className="my-1 text-[20px] shadow-inner">
+              <div className="my-2 text-[20px] shadow-inner">
                 {dateNormal(list.created_at)}
               </div>
             </li>

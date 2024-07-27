@@ -20,20 +20,20 @@ const Search = () => {
   };
 
   return (
-    <div className="w-screen flex justify-center items-center mb-3 space-x-1">
-      {" "}
+    <div className="w-screen flex justify-center items-center space-x-1">
       {/**search  */}
-      <form onSubmit={sendInput}>
+      <form onSubmit={sendInput} className="text-center items-center">
         <button type='submit'>
-          <FaSearchengin className=" w-7 h-7 mx-4 hover:scale-110" />
+          <FaSearchengin className=" w-7 h-7 mx-1 hover:scale-110" />
         </button>
         <input
           type="text"
           name="searchResult"
           onChange={(e) => setQueryy(e.target.value)}
           value={queryy}
-          className="bg-white border-4 h-11 rounded-xl"
-        />
+          className="bg-white border-4 h-11 rounded-xl "
+          />
+          <h1 className="mt-1 text-[20px] tracking-widest font-thin font-serif text-gray-500">Type to search mood , genre, author or find quote recommendations</h1>
       </form>
     </div>
   );

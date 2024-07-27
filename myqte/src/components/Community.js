@@ -48,9 +48,9 @@ const isoToDate = (dateConvert) =>{
     <ul key={index} className='px-5 rounded-ee-md h-16  flex'>
       <li className='  border-blue-500 border-2 m-2 rounded-md bg-blue-200 p-2 h-10 shadow-2xl'>
         <div>
-          {value.user_quote}
+         {value.user_quote ? value.user_quote : 'no one here yet, sorry'}
         </div>
-        <div className="my-1 text-[20px] shadow-inner">
+        <div className="my-2 text-[20px] shadow-inner">
           {isoToDate(value.created_at)}
         </div>
       </li>

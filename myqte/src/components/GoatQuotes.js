@@ -26,8 +26,8 @@ const interval = setInterval(getTopQ,500)
 return() => clearInterval(interval)
 }, [])
   return (
-    <div className=" text-center mt-4">
-      <div>Most Popular</div>{topQuotes.length > 0 ? (
+    <div className=" text-center mt-4 h-screen">
+      <div className="mb-1">Most Popular</div>{topQuotes.length > 0 ? (
         topQuotes.map((value,index)=>(
           <ul key={index} className="border-blue-500 border-2 m-4 rounded-md bg-blue-200 p-2 flex shadow-2xl">
             <li className="text-md m-4 items-center text-center flex ">
@@ -35,9 +35,9 @@ return() => clearInterval(interval)
             </li>
           </ul>
         ))
-      ) : 'no rankings'}
+      ) : <p className="font-thin my-1 italic text-sm">😱...'no rankings'</p>}
 
-      <div>Top Trending</div>{topTrend.length > 0 ? (
+      <div className="mb-1">Top Trending</div>{topTrend.length > 0 ? (
         topTrend.map((value,index)=>(
           <ul key={index} className="border-blue-500 border-2 m-4 rounded-md bg-blue-200 p-2 justify-center flex shadow-2xl">
             <li className="text-md m-4 items-center text-center flex">
@@ -45,8 +45,8 @@ return() => clearInterval(interval)
             </li>
           </ul>
         ))
-      ):'no rankings'}
-      <div>Most Quoted Author</div>{topQuotes.length > 0 ? (
+      ):<p className=" font-thin my-1 italic text-sm">😱...'no rankings'</p>}
+      <div className="mb-1">Most Quoted Author</div>{topQuotes.length > 0 ? (
         topQuotes.map((value,index)=>(
           <ul key={index} className="border-blue-500 border-2 m-4 rounded-md bg-blue-200 p-2 justify-center flex shadow-2xl">
             <li className="text-md m-4 items-center text-center flex">
@@ -54,7 +54,7 @@ return() => clearInterval(interval)
             </li>
           </ul>
         ))
-      ):'no rankings'}
+      ):<p className=" font-thin my-1 italic text-sm">😱...'no rankings'</p>}
     </div>
   );
 };

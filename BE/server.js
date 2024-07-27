@@ -5,19 +5,17 @@ const express = require("express");
 const app = express();
 const port = 3001;
 const bcrypt = require("bcrypt");
-const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const keys = require("./keys");
-const jwt_decode = require('jwt-decode')
-const fs = require('fs');
-const { json } = require("stream/consumers");
+const jwt_decode = require("jwt-decode");
+const fs = require("fs");
+const OpenAIApi = require("openai");
 
 app.use(express.json());
 app.use(cors());
 dotenv.config();
 
 //AUTH ROUTE HANDLERS
-
 
 //section
 //Register
@@ -71,40 +69,34 @@ app.post("/signIn", async (req, res) => {
 
 app.post("/logout", async (req, res) => {});
 
-
-
-
 //section
 //insert quotes into DB
 async function insertQuotesIntoDB() {
+  const quoteData = fs.readFileSync("../BE/qouteDB.json");
 
+  const jsonData = JSON.parse(quoteData);
 
-    const quoteData = fs.readFileSync('../BE/qouteDB.json')
+  for (let columns of jsonData) {
+    const checkDuplicate = await pool.query(
+      "SELECT * FROM quotes WHERE id = $1",
+      [columns._id]
+    );
 
-    const jsonData = JSON.parse(quoteData)
-
-    for (let columns of jsonData) {
-      const checkDuplicate = await pool.query(
-        "SELECT * FROM quotes WHERE id = $1",
-        [columns._id]
+    if (checkDuplicate.rows.length === 0) {
+      await pool.query(
+        "INSERT INTO quotes(id,quote,author,authorSlug,characters,category) VALUES($1,$2,$3,$4,$5,$6)",
+        [
+          columns._id,
+          columns.content,
+          columns.author,
+          columns.authorSlug,
+          columns.length,
+          columns.tags.join(", "),
+        ]
       );
-
-      if (checkDuplicate.rows.length === 0) {
-        await pool.query(
-          "INSERT INTO quotes(id,quote,author,authorSlug,characters,category) VALUES($1,$2,$3,$4,$5,$6)",
-          [
-            columns._id,
-            columns.content,
-            columns.author,
-            columns.authorSlug,
-            columns.length,
-            columns.tags.join(", "),
-          ]
-        );
-      }
     }
   }
-
+}
 
 insertQuotesIntoDB();
 //QUOTE DATA RETRIEVAL
@@ -202,154 +194,215 @@ app.post("/dislike/:id", async (req, res) => {
 
 //then use get  method to show realtime vote data
 
-app.get('/votes/:id',async(req,res) =>{
-  const id = req.params.id
+app.get("/votes/:id", async (req, res) => {
+  const id = req.params.id;
   try {
-    const votes = await pool.query('SELECT upvote , downvote FROM votes WHERE quote_id = $1 ',[id])
-    if(votes.rows.length === 0){
-    return res.json({likes:0,dislikes:0})
-    }else{
-      res.json({likes:votes.rows[0].upvote,dislikes:votes.rows[0].downvote})
+    const votes = await pool.query(
+      "SELECT upvote , downvote FROM votes WHERE quote_id = $1 ",
+      [id]
+    );
+    if (votes.rows.length === 0) {
+      return res.json({ likes: 0, dislikes: 0 });
+    } else {
+      res.json({
+        likes: votes.rows[0].upvote,
+        dislikes: votes.rows[0].downvote,
+      });
     }
   } catch (error) {
-    console.log('err',error)
-    res.status(500).json({message:'internal server error'})
+    console.log("err", error);
+    res.status(500).json({ message: "internal server error" });
   }
-})
+});
 //section
 // user save Quotes
 app.post("/saveQuote", async (req, res) => {
   const { user, _quote_ } = req.query;
   try {
-    //get token of session at time of http endpoint is sent 
-    const tokenDecode = jwt_decode.jwtDecode(user)
-   const userCurrent = tokenDecode.currentUser
-    const checkdupl = await pool.query('SELECT quote_ FROM user_favorites WHERE quote_ = $1',[userCurrent])
-    if(checkdupl.rows.length === 0){
-      const query  = await pool.query('INSERT INTO user_favorites(quote_,user_Email) VALUES($1,$2)',[_quote_,userCurrent]) 
-      res.status(200).json({userFav:query, message:'saved'})
-    }else{
-      res.status(200).json({'Already saved':checkdupl})
+    //get token of session at time of http endpoint is sent
+    const tokenDecode = jwt_decode.jwtDecode(user);
+    const userCurrent = tokenDecode.currentUser;
+    const checkdupl = await pool.query(
+      "SELECT quote_ FROM user_favorites WHERE quote_ = $1",
+      [userCurrent]
+    );
+    if (checkdupl.rows.length === 0) {
+      const query = await pool.query(
+        "INSERT INTO user_favorites(quote_,user_Email) VALUES($1,$2)",
+        [_quote_, userCurrent]
+      );
+      res.status(200).json({ userFav: query, message: "saved" });
+    } else {
+      res.status(200).json({ "Already saved": checkdupl });
     }
   } catch (error) {
-    console.log('err',error)
-    res.status(500).json({message:'internal server error'})
+    console.log("err", error);
+    res.status(500).json({ message: "internal server error" });
   }
 });
 
-
-app.delete('/removeFav/:_q/:session', async(req,res)=>{
+app.delete("/removeFav/:_q/:session", async (req, res) => {
   try {
-    const _q = req.params._q
-    const session = req.params.session
-    const delQuote = await pool.query('DELETE FROM user_favorites WHERE quote_ = $1 AND user_email = $2', [_q, session]);
+    const _q = req.params._q;
+    const session = req.params.session;
+    const delQuote = await pool.query(
+      "DELETE FROM user_favorites WHERE quote_ = $1 AND user_email = $2",
+      [_q, session]
+    );
     if (delQuote.rowCount > 0) {
       res.status(200).json({ message: `deleted:${delQuote.rowCount}` });
     } else {
-      res.status(404).json({ message: 'Quote not found or already deleted.....',_q });
+      res
+        .status(404)
+        .json({ message: "Quote not found or already deleted.....", _q });
     }
   } catch (error) {
-    console.log('err', error);
-    res.status(500).json({ message: 'internal server error' });
+    console.log("err", error);
+    res.status(500).json({ message: "internal server error" });
   }
-})
+});
 
 //retrieve user favorite quote
 app.get("/userfav/:logged", async (req, res) => {
   const { logged } = req.params;
   try {
-      const token = jwt_decode.jwtDecode(logged)
-    const email = token.currentUser
-    const savedQid = await pool.query('SELECT quote_ FROM user_favorites WHERE user_email = $1',[email])
-    console.log('Fetched quote IDs:', savedQid.rows);
-    const fetched =  savedQid.rows.map(row => row.quote_)
-    if(fetched.length === 0){
-      return res.status(400).json({message:'no quotes found'})
+    const token = jwt_decode.jwtDecode(logged);
+    const email = token.currentUser;
+    const savedQid = await pool.query(
+      "SELECT quote_ FROM user_favorites WHERE user_email = $1",
+      [email]
+    );
+    console.log("Fetched quote IDs:", savedQid.rows);
+    const fetched = savedQid.rows.map((row) => row.quote_);
+    if (fetched.length === 0) {
+      return res.status(400).json({ message: "no quotes found" });
     }
-    const quote = await pool.query('SELECT quote FROM quotes WHERE id = ANY($1)',[fetched])
-    console.log(quote.rows)
-    res.status(200).json({quotes:quote.rows, fetched})
+    const quote = await pool.query(
+      "SELECT quote FROM quotes WHERE id = ANY($1)",
+      [fetched]
+    );
+    console.log(quote.rows);
+    res.status(200).json({ quotes: quote.rows, fetched });
   } catch (error) {
-    res.status(500).json({message:'internal service error(500)'})
+    res.status(500).json({ message: "internal service error(500)" });
   }
 });
 
-
 //section
 //upload user quote
-app.post('/uploadQuote/:user/:quotes', async(req,res)=>{
-try {
-    const {user,quotes} = req.params
-  console.log(quotes)
-    const tkn = jwt_decode.jwtDecode(user)
-    const loggedUser = tkn.currentUser
-    const queryCreate = await pool.query('INSERT INTO user_quotes(user_quote,username) VALUES($1,$2) RETURNING *',[quotes,loggedUser])
-    res.status(200).json({savedAs:queryCreate.rows[0]})
-} catch (error) {
-  res.status(400).json({message:'internal service error(500)',Error:error})
-}
-})
-
-
-//SELECT user_quote FROM user_quotes WHERE current user is 
-//retrieve user quote
-app.get('/userQuotesFetch/:currentLogged', async(req,res)=>{
+app.post("/uploadQuote/:user/:quotes", async (req, res) => {
   try {
-    const {currentLogged} = req.params
-    const decoder = jwt_decode.jwtDecode(currentLogged)
-    const user_Email = decoder.currentUser
-    const GetMadeQuotes = await pool.query('SELECT user_quote , created_at , id FROM user_quotes WHERE username = $1',[user_Email])
-    res.status(200).json({UserQuotes:GetMadeQuotes.rows})
+    const { user, quotes } = req.params;
+    console.log(quotes);
+    const tkn = jwt_decode.jwtDecode(user);
+    const loggedUser = tkn.currentUser;
+    const queryCreate = await pool.query(
+      "INSERT INTO user_quotes(user_quote,username) VALUES($1,$2) RETURNING *",
+      [quotes, loggedUser]
+    );
+    res.status(200).json({ savedAs: queryCreate.rows[0] });
   } catch (error) {
-    res.status(500).json({message:'internal server Error 500', _error:error})
+    res
+      .status(400)
+      .json({ message: "internal service error(500)", Error: error });
   }
-})
+});
 
-
+//SELECT user_quote FROM user_quotes WHERE current user is
+//retrieve user quote
+app.get("/userQuotesFetch/:currentLogged", async (req, res) => {
+  try {
+    const { currentLogged } = req.params;
+    const decoder = jwt_decode.jwtDecode(currentLogged);
+    const user_Email = decoder.currentUser;
+    const GetMadeQuotes = await pool.query(
+      "SELECT user_quote , created_at , id FROM user_quotes WHERE username = $1",
+      [user_Email]
+    );
+    res.status(200).json({ UserQuotes: GetMadeQuotes.rows });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "internal server Error 500", _error: error });
+  }
+});
 
 //show all community quotes
 
-app.get('/community',async(req,res)=>{
-  try{
-    const allCommunity = await pool.query('SELECT user_quote , created_at FROM user_quotes')
-    res.status(200).json({all:allCommunity.rows})
-  }catch (error) {
-    res.status(500).json({message:'internal server Error 500', _error:error})
-  }
-})
-
-app.delete('/deleteUserQuote/:qId',async(req,res)=>{
-  const q = req.params.qId
+app.get("/community", async (req, res) => {
   try {
-    const deleteQ = await pool.query('DELETE FROM user_quotes WHERE id=$1',[q])
-    res.status(200).json({message:'Delete success',deleteQ})
+    const allCommunity = await pool.query(
+      "SELECT user_quote , created_at FROM user_quotes"
+    );
+    res.status(200).json({ all: allCommunity.rows });
   } catch (error) {
-    res.status(500).json({message:'internal server Error 500', _error:error})
+    res
+      .status(500)
+      .json({ message: "internal server Error 500", _error: error });
   }
-})
+});
 
-
-app.get('/rankedQuotes',async(req,res)=>{
+app.delete("/deleteUserQuote/:qId", async (req, res) => {
+  const q = req.params.qId;
   try {
-    const mostPopular = await pool.query('SELECT uf.quote_, q.quote, q.author, COUNT(uf.quote_) AS favorite_count FROM user_favorites uf JOIN quotes q ON uf.quote_ = q.id GROUP BY uf.quote_, q.quote, q.author ORDER BY favorite_count DESC LIMIT 1')
-    const topTrending = await pool.query(`SELECT uf.quote_, q.quote, q.author, COUNT(uf.quote_) AS favorite_count FROM user_favorites uf JOIN quotes q ON uf.quote_ = q.id WHERE uf.created_at >= NOW() - INTERVAL '5 days' GROUP BY uf.quote_, q.quote, q.author ORDER BY favorite_count DESC LIMIT 3`)
-    res.status(200).json({topQ:mostPopular.rows ,trending:topTrending.rows})
-} catch (error) {
-  res.status(500).json({message:'internal server Error 500', _error:error})
-}
-})
-
-
-//AI search
-app.post('/searchQuery', async(req,res)=>{
-  try {
- const Searchtext = req.query.queryI
- res.status(200).json({messageJson:Searchtext})
- console.log('message------>!!!!',Searchtext)
+    const deleteQ = await pool.query("DELETE FROM user_quotes WHERE id=$1", [
+      q,
+    ]);
+    res.status(200).json({ message: "Delete success", deleteQ });
   } catch (error) {
-    res.status(500).json({message:'internal server Error 500', Err:error})
+    res
+      .status(500)
+      .json({ message: "internal server Error 500", _error: error });
   }
-  })
+});
+
+app.get("/rankedQuotes", async (req, res) => {
+  try {
+    const mostPopular = await pool.query(
+      "SELECT uf.quote_, q.quote, q.author, COUNT(uf.quote_) AS favorite_count FROM user_favorites uf JOIN quotes q ON uf.quote_ = q.id GROUP BY uf.quote_, q.quote, q.author ORDER BY favorite_count DESC LIMIT 1"
+    );
+    const topTrending = await pool.query(
+      `SELECT uf.quote_, q.quote, q.author, COUNT(uf.quote_) AS favorite_count FROM user_favorites uf JOIN quotes q ON uf.quote_ = q.id WHERE uf.created_at >= NOW() - INTERVAL '5 days' GROUP BY uf.quote_, q.quote, q.author ORDER BY favorite_count DESC LIMIT 3`
+    );
+    res
+      .status(200)
+      .json({ topQ: mostPopular.rows, trending: topTrending.rows });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "internal server Error 500", _error: error });
+  }
+});
+
+//AI search-input
+const client = new OpenAIApi({
+  apiKey:keys.OPENAI_API_KEY
+})
+app.post("/searchQuery", async (req, res) => {
+  try {
+    const Searchtext = req.query.queryI;
+    const embedding = await client.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: Searchtext,
+      encoding_format: "float",
+    })
+    res.status(200).json({ messageJson: embedding, input: Searchtext });
+    console.log("message------>!!!!", embedding);
+  } catch (error) {
+    res.status(500).json({ message: "internal server Error 500", Err: error });
+  }
+});
+//AI DBembeddingSearch-VectorDB
+
+const addEmbedding = async () => {
+  try {
+    const quotesForEmbed = await pool.query('SELECT quote FROM quotes')
+  } catch (error) {
+    
+  }
+} 
+
+
 
 //port
 app.listen(port, () => {

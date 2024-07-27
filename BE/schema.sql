@@ -77,3 +77,4 @@ CREATE TRIGGER update_userquotes_updated_at_trigger
 BEFORE UPDATE ON userquotes
 FOR EACH ROW
 EXECUTE FUNCTION update_userquotes_updated_at();
+
