@@ -394,13 +394,13 @@ app.post("/searchQuery", async (req, res) => {
 });
 //AI DBembeddingSearch-VectorDB
 
-const addEmbedding = async () => {
-  try {
-    const quotesForEmbed = await pool.query('SELECT quote FROM quotes')
-  } catch (error) {
+// const addEmbedding = async () => {
+//   try {
+//     const quotesForEmbed = await pool.query('SELECT quote FROM quotes')
+//   } catch (error) {
     
-  }
-} 
+//   }
+// } 
 
 
 
