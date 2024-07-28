@@ -49,6 +49,8 @@ CREATE TABLE user_favorites (
 );
 
 
+
+
 CREATE OR REPLACE FUNCTION update_users_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

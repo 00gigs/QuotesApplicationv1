@@ -376,8 +376,9 @@ app.get("/rankedQuotes", async (req, res) => {
 
 //AI search-input
 const client = new OpenAIApi({
-  apiKey:keys.OPENAI_API_KEY
-})
+  apiKey: keys.OPENAI_API_KEY,
+});
+
 app.post("/searchQuery", async (req, res) => {
   try {
     const Searchtext = req.query.queryI;
@@ -385,22 +386,40 @@ app.post("/searchQuery", async (req, res) => {
       model: "text-embedding-ada-002",
       input: Searchtext,
       encoding_format: "float",
-    })
+    });
     res.status(200).json({ messageJson: embedding, input: Searchtext });
     console.log("message------>!!!!", embedding);
   } catch (error) {
     res.status(500).json({ message: "internal server Error 500", Err: error });
   }
 });
-//AI DBembeddingSearch-VectorDB
-
+//AI DBembeddingSearch-VectorDB (inserted embeddings into table 07/28 ) LEAVE HOW CODE IS👇🏻
 // const addEmbedding = async () => {
 //   try {
-//     const quotesForEmbed = await pool.query('SELECT quote FROM quotes')
+//     const quotesForEmbed = await pool.query("SELECT id, quote FROM quotes");
+//     for (let i = 0; i < quotesForEmbed.rows.length; i++) {
+//       const row = quotesForEmbed.rows[i];
+//       const response = await client.embeddings.create({
+//         model: "text-embedding-ada-002",
+//         input: row.quote,
+//         encoding_format: "float",
+//       });
+
+//       const embeddings = response.data[0].embedding;
+      
+//       const embeddingArray =`[${embeddings.join(',')}]`
+//          await pool.query("UPDATE quotes SET embedding = $1 WHERE id = $2", [
+//         embeddingArray,row.id
+//       ]);
+//     }
+//     return {success:true}
 //   } catch (error) {
-    
+//     console.error('Error:', error);
+//     return { success: false, error };
 //   }
-// } 
+// };
+
+
 
 
 
