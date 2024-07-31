@@ -36,10 +36,10 @@ const [similarQuotes, setSimilarQuotes] = useState([])
           className="bg-white border-4  rounded-xl "
           />
           <h1 className="mt-1 text-[20px] tracking-widest font-thin font-serif text-gray-500">Type to search mood , genre, author or find quote recommendations</h1>
-          <div className="bg-blue-100   w-full max-w-md p-4 rounded-lg">
+          <div className=" w-full max-w-md p-4 rounded-lg">
           {similarQuotes.map((value,index)=>(
             <ul key={index}>
-              <li className="text-sm border-b-2 border-blue-100">-{value.quote}</li>
+              <li className="text-xs border-b-8 font-semibold tracking-wide pb-1">'{value.quote}'</li>
             </ul>
           ))}
           </div>
