@@ -382,17 +382,29 @@ const client = new OpenAIApi({
 app.post("/searchQuery", async (req, res) => {
   try {
     const Searchtext = req.query.queryI;
-    const embedding = await client.embeddings.create({
+    const embeddingRes = await client.embeddings.create({
       model: "text-embedding-ada-002",
       input: Searchtext,
       encoding_format: "float",
     });
-    res.status(200).json({ messageJson: embedding, input: Searchtext });
-    console.log("message------>!!!!", embedding);
+    const embeddings = embeddingRes.data[0].embedding
+    const embeddingArray = `[${embeddings.join(', ')}]`;
+    const result = await pool.query(' SELECT *, (embedding <=> $1) AS distance FROM quotes ORDER BY distance LIMIT 5',[embeddingArray])
+    res.status(200).json({ messageJson: result.rows , input: Searchtext });
   } catch (error) {
     res.status(500).json({ message: "internal server Error 500", Err: error });
   }
 });
+
+// const rows = await this.#client.query!
+// "SELECT name, description, price, 1 - (description_embedding <=> $1) as similarity "
+// "FROM airbnb_listing " +
+// "WHERE 1 - (description_embedding <=> $1) >= $2 ORDER BY similarity DESC LIMIT $3"
+// ['I' + embeddingResp. data [0] embedding + ']', matchThreshold, matchCnt]);") in return places;
+
+
+
+
 //AI DBembeddingSearch-VectorDB (inserted embeddings into table 07/28 ) LEAVE HOW CODE IS👇🏻
 // const addEmbedding = async () => {
 //   try {
@@ -406,7 +418,7 @@ app.post("/searchQuery", async (req, res) => {
 //       });
 
 //       const embeddings = response.data[0].embedding;
-      
+
 //       const embeddingArray =`[${embeddings.join(',')}]`
 //          await pool.query("UPDATE quotes SET embedding = $1 WHERE id = $2", [
 //         embeddingArray,row.id
@@ -418,10 +430,6 @@ app.post("/searchQuery", async (req, res) => {
 //     return { success: false, error };
 //   }
 // };
-
-
-
-
 
 //port
 app.listen(port, () => {

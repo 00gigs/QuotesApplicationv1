@@ -12,8 +12,8 @@ import Authpage from "./components/Authpage";
 import Login from "./components/Login";
 function App() {
   return (
-    <div className="text-black bg-[#f1dfb8d3]">
-      <Navbar />
+    <div className="text-black min-h-screen bg-[#f1dfb8d3]">
+      <Navbar/>
     <Routes>
       <Route path="/" element={ <QuoteBox />}/>
       <Route path="/forum" element={<Community/>}/>

@@ -2,7 +2,7 @@ import React from 'react'
 import { navLinks } from '../constants/Navlinks'
 const Navbar = () => {
   return (
-    <div className='flex sticky justify-center text-center bg-[#54D449] h-9 items-center border-b-4 border-black sm:h-12'>
+    <div className='mb-7 flex sticky justify-center text-center bg-[#54D449] h-9 items-center border-b-4 border-black sm:h-12'>
       <ul className='flex gap-2 justify-center mb-1 '>
       {navLinks.map((link)=>(
         <a href={link.route}>

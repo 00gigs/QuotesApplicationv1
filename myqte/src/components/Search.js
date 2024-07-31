@@ -5,14 +5,16 @@ import axios from "axios";
 
 const Search = () => {
   const [queryy, setQueryy] = useState("");
-
+const [similarQuotes, setSimilarQuotes] = useState([])
   const sendInput = (e) => {
     e.preventDefault();
     axios
       .post(`http://localhost:3001/searchQuery?queryI=${encodeURIComponent(queryy)}`)
       .then((response) => {
-        console.log("sent", response.data);
+        console.log("req/res_Data", response.data.messageJson);
         setQueryy('')
+        setSimilarQuotes(response.data.messageJson)
+        console.log("SimilarQuotes", similarQuotes);
       })
       .catch((error) => {
         console.error("error retrieving inout-->", error);
@@ -20,7 +22,7 @@ const Search = () => {
   };
 
   return (
-    <div className="w-screen flex justify-center items-center space-x-1">
+    <div className="w-screen flex flex-col justify-center items-center space-x-1">
       {/**search  */}
       <form onSubmit={sendInput} className="text-center items-center">
         <button type='submit'>
@@ -31,9 +33,16 @@ const Search = () => {
           name="searchResult"
           onChange={(e) => setQueryy(e.target.value)}
           value={queryy}
-          className="bg-white border-4 h-11 rounded-xl "
+          className="bg-white border-4  rounded-xl "
           />
           <h1 className="mt-1 text-[20px] tracking-widest font-thin font-serif text-gray-500">Type to search mood , genre, author or find quote recommendations</h1>
+          <div className="bg-blue-100   w-full max-w-md p-4 rounded-lg">
+          {similarQuotes.map((value,index)=>(
+            <ul key={index}>
+              <li className="text-sm border-b-2 border-blue-100">-{value.quote}</li>
+            </ul>
+          ))}
+          </div>
       </form>
     </div>
   );
