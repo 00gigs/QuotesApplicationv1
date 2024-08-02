@@ -56,6 +56,7 @@ const httpDelete = async (quoteId) =>{
 }
 
 useEffect(() => {
+ 
   fetchSaved()
 const intervalid = setInterval(fetchSaved,10000)
 return () => clearInterval(intervalid)
@@ -84,7 +85,7 @@ return () => clearInterval(intervalid)
     <li className="m-4 items-center text-center flex" >
       <MdDelete 
       onClick={()=>httpDelete(id[index])}
-      className=" hover:cursor-pointer hover:scale-110 size-3 bg-red-300 rounded-full mx-2 text-xs"
+      className=" hover:cursor-pointer hover:scale-110 size-3 w-8 bg-red-300 rounded-full mx-2 text-lg sm:size-4"
       />
     <FaShareNodes
     className=" bg-green-500 size-3 rounded-lg mx-1"
