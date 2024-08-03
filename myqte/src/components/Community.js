@@ -43,21 +43,25 @@ const isoToDate = (dateConvert) =>{
   }, [])
 
   return (
-    <div className='h-screen flex text-center items-center justify-center'>
-  {communityQuotes.map((value,index)=>(
-    <ul key={index} className='px-5 rounded-ee-md h-16  flex'>
-      <li className='  border-blue-500 border-2 m-2 rounded-md bg-blue-200 p-2 h-10 shadow-2xl'>
-        <div>
-         {value.user_quote ? value.user_quote : 'no one here yet, sorry'}
-        </div>
-        <div className="my-2 text-[20px] shadow-inner">
-          {isoToDate(value.created_at)}
-        </div>
-      </li>
-    </ul>
-  ))}
+    <div className='h-screen flex flex-col items-center justify-center'>
+      {communityQuotes.length === 0 ? (
+        <p>No one here yet, sorry</p>
+      ) : (
+        communityQuotes.map((value, index) => (
+          <ul key={index} className='px-5 rounded-ee-md h-16 flex'>
+            <li className='border-blue-500 border-2 m-2 rounded-md bg-blue-200 p-2 h-10 shadow-2xl'>
+              <div>
+                <p className='text-black'>{value.user_quote}</p>
+              </div>
+              <div className="my-2 text-[20px] shadow-inner">
+                {isoToDate(value.created_at)}
+              </div>
+            </li>
+          </ul>
+        ))
+      )}
     </div>
-  )
+  );
 }
 
 export default Community
