@@ -5,6 +5,7 @@ import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 import { FaPlusCircle } from "react-icons/fa";
 import { useState } from "react";
 import Search from "./Search";
+import toast, { Toaster } from 'react-hot-toast';
 
 // import { useEffect } from "react";
 import axios from "axios";
@@ -16,6 +17,8 @@ const QuoteBox = () => {
 
   const user_token = localStorage.getItem('token')
 
+  const notify = () => toast('Please Log in to Save quotes and cast votes');
+  const notify2 = () => toast('Please shake dice before Saving or voting');
 
   //random quote handle
   const genRandomQuote = async () => {
@@ -25,7 +28,15 @@ const QuoteBox = () => {
     fetchVotes()
   };
 
-  //video popularity
+  //quote popularity  FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
   const handleLike = async () => {
     axios
       .post(`http://localhost:3001/like/${quote.id}`)
@@ -50,6 +61,12 @@ const QuoteBox = () => {
  }
   }
 
+
+
+//This is good below
+//This is good below
+//This is good below
+//This is good below
   // Save quote handle
   const handleSave = async() =>{
   try {
@@ -57,8 +74,10 @@ const QuoteBox = () => {
       console.log('qoute saved',res.data)
     }).catch((err)=>{
       console.error('err',err)
+      notify()
     })
   } catch (error) {
+    notify2()
     console.log('error posting favoirte',error)
   }
   }
@@ -105,6 +124,7 @@ const QuoteBox = () => {
                   onClick={genRandomQuote}
                 />
               </button>
+              <Toaster />
             </div>
           </div>
         </div>

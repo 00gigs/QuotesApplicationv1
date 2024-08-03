@@ -1,12 +1,27 @@
 import React from "react";
 import axios from 'axios'
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 const Create = () => {
 
 const getLogged = localStorage.getItem('token')
-
+const nav = useNavigate()
 const [userQuote,setUserQuote] = useState('')
+
+
+const checkUser = () => {
+  if(getLogged){
+    console.log('logged')
+  }else{
+    nav("/Login")
+  }
+}
+
+useEffect(() => {
+  checkUser();
+}, []);
+
 
   const Upload = (e) =>{
     e.preventDefault()

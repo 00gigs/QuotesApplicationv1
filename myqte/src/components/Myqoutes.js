@@ -2,17 +2,36 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 const Myqoutes = () => {
   const [user_quotes, setUser_quotes] = useState([]);
   const Session = localStorage.getItem("token");
+  const nav = useNavigate()
+
+  const checkLogged = () => {
+    if(Session){
+      console.log('logged')
+    }else{
+      nav("/Login")
+    }
+  }
+  
+  useEffect(() => {
+    checkLogged();
+  }, []);
+  
 
   const fetch_user = async () => {
-    const res = await axios.get(
-      `http://localhost:3001/userQuotesFetch/${Session}`
-    );
-    const quotes = res.data.UserQuotes;
-    setUser_quotes(quotes);
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/userQuotesFetch/${Session}`
+      );
+      const quotes = res.data.UserQuotes;
+      setUser_quotes(quotes);
+    } catch (error) {
+      console.error('error--->',error)
+    }
   };
 
   const dateNormal = (dateConvert) => {
@@ -41,11 +60,15 @@ const Myqoutes = () => {
   };
 
   useEffect(() => {
+    checkLogged()
     fetch_user();
     const intervals = setInterval(fetch_user, 10000);
     return () => clearInterval(intervals);
   }, []);
 
+  if(!Session){
+    return null
+  }
   return (
     <div className="h-screen  flex-col text-center items-center justify-center">
       <h1 className="mt-[10px]">
