@@ -38,14 +38,22 @@ const QuoteBox = () => {
 // FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
 // FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
   const handleLike = async () => {
-    axios
-      .post(`http://localhost:3001/like/${quote.id}`)
-      .then((res) => { setLikes(res.data.likes)}).catch((error)=>{console.error('Err',error)});
+    if(user_token){
+      axios
+        .post(`http://localhost:3001/like/${quote.id}`)
+        .then((res) => { setLikes(res.data.likes)}).catch((error)=>{console.error('Err',error)});
+    }else{
+      notify()
+    }
   };
   const handleDislike = async () => {
-    axios
-    .post(`http://localhost:3001/dislike/${quote.id}`)
-    .then((res) => { setDislikes(res.data.dislikes)}).catch((error)=>{console.error('Err',error)})
+    if(user_token){
+      axios
+      .post(`http://localhost:3001/dislike/${quote.id}`)
+      .then((res) => { setDislikes(res.data.dislikes)}).catch((error)=>{console.error('Err',error)})
+    }else{
+      notify()
+    }
   };
 
 
