@@ -28,15 +28,7 @@ const QuoteBox = () => {
     fetchVotes()
   };
 
-  //quote popularity  FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
-// FIX SO THAT YOU CANT VOTE IF NOT LOGGED IN 
+//vote handles
   const handleLike = async () => {
     if(user_token){
       axios
@@ -71,10 +63,6 @@ const QuoteBox = () => {
 
 
 
-//This is good below
-//This is good below
-//This is good below
-//This is good below
   // Save quote handle
   const handleSave = async() =>{
   try {
@@ -96,7 +84,7 @@ const QuoteBox = () => {
         {/* Search */}
         <Search />
         {/* Quote content */}
-        <div className="bg-slate-500 shadow-2xl border-2 border-white p-5 rounded-lg">
+        <div className="bg-[#e6f4f2be] shadow-2xl border-2 border-white p-5 rounded-lg">
           {/* Main content */}
           <div className=" space-y-2">
             <p className="text-[22px]">
