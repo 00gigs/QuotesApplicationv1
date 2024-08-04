@@ -19,6 +19,7 @@ const QuoteBox = () => {
 
   const notify = () => toast('Please Log in to Save quotes and cast votes');
   const notify2 = () => toast('Please shake dice before Saving or voting');
+  const notifySave = () => toast('Quote Saved !');
 
   //random quote handle
   const genRandomQuote = async () => {
@@ -67,7 +68,7 @@ const QuoteBox = () => {
   const handleSave = async() =>{
   try {
     axios.post(`http://localhost:3001/saveQuote?_quote_=${quote.id}&user=${user_token}`).then((res)=>{
-      console.log('qoute saved',res.data)
+   notifySave()
     }).catch((err)=>{
       console.error('err',err)
       notify()
