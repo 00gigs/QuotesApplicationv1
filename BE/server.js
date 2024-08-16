@@ -6,7 +6,7 @@ const app = express();
 const port = 3001;
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const keys = require("./keys");
+// const keys = require("./keys");
 const jwt_decode = require("jwt-decode");
 const fs = require("fs");
 const OpenAIApi = require("openai");
@@ -56,7 +56,7 @@ app.post("/signIn", async (req, res) => {
     }
     const userSession = await jwt.sign(
       { currentUser: userEmail },
-      keys.JWT_HASH_KEY,
+      process.env.JWT_HASH_KEY,
       { expiresIn: "1800s" }
     );
 
@@ -376,7 +376,7 @@ app.get("/rankedQuotes", async (req, res) => {
 
 //AI search-input
 const client = new OpenAIApi({
-  apiKey: keys.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 app.post("/searchQuery", async (req, res) => {
