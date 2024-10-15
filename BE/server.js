@@ -46,12 +46,13 @@ app.post("/signIn", async (req, res) => {
       userEmail,
     ]);
     if (user.rows.length === 0) {
-      res.status(400).json({ message: "no user found" });
+      return res.status(400).json({ message: "no user found" });
     }
     const userPass = user.rows[0];
     const compare = await bcrypt.compare(userPassword, userPass.hashedpass);
 
     if (!compare) {
+     
       return res.status(400).json({ message: "Invalid credentials" });
     }
     const userSession = await jwt.sign(
@@ -375,8 +376,17 @@ app.get("/rankedQuotes", async (req, res) => {
 });
 
 //AI search-input
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
+  //MADE NEW KEY OCT 15 NOW I HAVE TO UPLOAD APPLICATION TO EC2
 const client = new OpenAIApi({
-  apiKey: keys.OPENAI_API_KEY,
+  apiKey: keys.OPENAI_API_KEY ,
 });
 
 app.post("/searchQuery", async (req, res) => {
